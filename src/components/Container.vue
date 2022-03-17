@@ -1,14 +1,14 @@
 <template>
     <div class="Container">
         <v-row justify="center">
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
+            <ImageCard :person="people[0]" />
+            <ImageCard :person="people[0]" />
+            <ImageCard :person="people[0]" />
+            <ImageCard :person="people[0]" />
+            <ImageCard :person="people[0]" />
+            <ImageCard :person="people[0]" />
+            <ImageCard :person="people[0]" />
+            <ImageCard :person="people[0]" />
         </v-row>
     </div>
 </template>
@@ -29,6 +29,7 @@ export default {
                     name: "Anand Kumar",
                     id: 1,
                     dob: moment("6-12-1960", "D-MM-YYYY"),
+                    gender: "M"
                 }
             ]
         }
