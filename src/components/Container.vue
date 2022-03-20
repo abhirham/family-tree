@@ -1,9 +1,16 @@
 <template>
     <div class="Container">
         <template v-for="group in groupedUsersToShow">
-            <v-card-title :key="group.title+'s'">{{group.title}}</v-card-title>
+            <v-card-title :key="group.title + 's'">{{
+                group.title
+            }}</v-card-title>
             <v-row justify="center" :key="group.title">
-                <ImageCard @select="handleCardSelect(user)" v-for="user in group.users" :key="user.id" :person="user" />
+                <ImageCard
+                    @select="handleCardSelect(user)"
+                    v-for="user in group.users"
+                    :key="user.id"
+                    :person="user"
+                />
             </v-row>
         </template>
     </div>
@@ -11,7 +18,7 @@
 
 <script>
 import ImageCard from "./ImageCard.vue";
-import moment from 'moment';
+import moment from "moment";
 
 export default {
     name: "Container",
@@ -30,7 +37,7 @@ export default {
                     dod: moment(),
                     gender: "M",
                     description: "",
-                    related: [{id: 2, relation: "Husband"}]
+                    related: [{ id: 2, relation: "Husband" }],
                 },
                 {
                     name: "OG Wife",
@@ -41,7 +48,7 @@ export default {
                     dod: moment(),
                     gender: "F",
                     description: "",
-                    related: [{id: 1, relation: "Wife"}]
+                    related: [{ id: 1, relation: "Wife" }],
                 },
                 {
                     name: "OG Son",
@@ -53,10 +60,10 @@ export default {
                     gender: "M",
                     description: "",
                     related: [
-                        {id: 1, relation: "Son"},
-                        {id: 2, relation: "Son"},
-                        {id: 4, relation: "Husband"}
-                    ]
+                        { id: 1, relation: "Son" },
+                        { id: 2, relation: "Son" },
+                        { id: 4, relation: "Husband" },
+                    ],
                 },
                 {
                     name: "OG Son Wife",
@@ -67,57 +74,55 @@ export default {
                     dod: null,
                     gender: "F",
                     description: "",
-                    related: [
-                        {id: 3, relation: "Wife"},
-                    ]
-                }
+                    related: [{ id: 3, relation: "Wife" }],
+                },
             ],
             navIds: [],
             titleToRelationMap: {
                 Spouse: ["Wife", "Husband"],
                 Children: ["Son", "Daughter"],
-            }
-        }
+            },
+        };
     },
     computed: {
-        activeNavId(){
-            return this.navIds[this.navIds.length-1]
+        activeNavId() {
+            return this.navIds[this.navIds.length - 1];
         },
         usersToShow() {
-            return this.people.filter(x => {
-                if(this.activeNavId === undefined) {
+            return this.people.filter((x) => {
+                if (this.activeNavId === undefined) {
                     return x.generation === 1;
                 }
 
-                return x.related.some(y => y.id === this.activeNavId);
+                return x.related.some((y) => y.id === this.activeNavId);
             });
         },
         headerToRelationMap() {
             let obj = this.titleToRelationMap;
 
-            let res = {}
-            Object.keys(obj).forEach(x => {
-                obj[x].forEach(y => res[y] = x);
-            })
+            let res = {};
+            Object.keys(obj).forEach((x) => {
+                obj[x].forEach((y) => (res[y] = x));
+            });
 
             return res;
         },
         groupedUsersToShow() {
-            if(this.activeNavId === undefined) {
+            if (this.activeNavId === undefined) {
                 return [
                     {
                         title: null,
-                        users: this.usersToShow
-                    }
-                ]
+                        users: this.usersToShow,
+                    },
+                ];
             }
 
             let obj = {};
-            this.usersToShow.forEach(x => {
+            this.usersToShow.forEach((x) => {
                 let relation = "";
 
-                x.related.some(y => {
-                    if(y.id === this.activeNavId) {
+                x.related.some((y) => {
+                    if (y.id === this.activeNavId) {
                         relation = y.relation;
                         return true;
                     }
@@ -125,23 +130,24 @@ export default {
                     return false;
                 });
 
-                obj[this.headerToRelationMap[relation]] = obj[this.headerToRelationMap[relation]] ?? [];
+                obj[this.headerToRelationMap[relation]] =
+                    obj[this.headerToRelationMap[relation]] ?? [];
                 obj[this.headerToRelationMap[relation]].push(x);
-            })
-
-            let arr = []
-            
-            Object.keys(this.titleToRelationMap).forEach(x => {
-                arr.push({title: x, users: obj[x]})
             });
 
-            return arr.filter(x => (x.users ?? []).length > 0);
-        }
+            let arr = [];
+
+            Object.keys(this.titleToRelationMap).forEach((x) => {
+                arr.push({ title: x, users: obj[x] });
+            });
+
+            return arr.filter((x) => (x.users ?? []).length > 0);
+        },
     },
     methods: {
-        handleCardSelect({id}){
+        handleCardSelect({ id }) {
             this.navIds = [...this.navIds, id];
-        }
-    }
+        },
+    },
 };
 </script>

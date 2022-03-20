@@ -1,34 +1,27 @@
 <template>
-  <v-app>
-    <v-app-bar
-      app
-      color="white"
-      dark
-      elevate-on-scroll
-    >
-      <v-spacer></v-spacer>
+    <v-app>
+        <v-app-bar app color="white" dark elevate-on-scroll>
+            <v-spacer></v-spacer>
+        </v-app-bar>
 
-      
-    </v-app-bar>
-
-    <v-main>
-      <Container />
-    </v-main>
-  </v-app>
+        <v-main>
+            <Container />
+        </v-main>
+    </v-app>
 </template>
 
 <script>
-import Container from './components/Container';
+import Container from "./components/Container";
 
 export default {
-  name: 'App',
+    name: "App",
 
-  components: {
-    Container,
-  },
+    components: {
+        Container,
+    },
 
-  data: () => ({
-    //
-  }),
+    data: () => ({
+        //
+    }),
 };
 </script>
