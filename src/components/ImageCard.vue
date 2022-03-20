@@ -1,5 +1,5 @@
 <template>
-    <v-card max-width="374" class="mx-5 mb-5 ImageCard">
+    <v-card max-width="374" @click="$emit('select')" class="mx-5 mb-5 ImageCard">
         <v-img
             height="250"
             src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
