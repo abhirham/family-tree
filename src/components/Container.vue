@@ -4,7 +4,7 @@
             <v-card-title :key="group.title + 's'">{{
                 group.title
             }}</v-card-title>
-            <v-row  :key="group.title">
+            <v-row class="mb-0" :key="group.title">
                 <ImageCard
                     @select="handleCardSelect(user)"
                     v-for="user in group.users"
@@ -18,7 +18,6 @@
 
 <script>
 import ImageCard from "./ImageCard.vue";
-import moment from "moment";
 
 export default {
     name: "Container",
@@ -27,57 +26,6 @@ export default {
     },
     data() {
         return {
-            people: [
-                {
-                    name: "OG hus",
-                    id: 1,
-                    generation: 1,
-                    dob: moment("6-12-1960", "D-MM-YYYY"),
-                    deceased: true,
-                    dod: moment(),
-                    gender: "M",
-                    description: "",
-                    related: [{ id: 2, relation: "Husband" }],
-                },
-                {
-                    name: "OG Wife",
-                    id: 2,
-                    generation: 1,
-                    dob: moment("6-12-1960", "D-MM-YYYY"),
-                    deceased: true,
-                    dod: moment(),
-                    gender: "F",
-                    description: "",
-                    related: [{ id: 1, relation: "Wife" }],
-                },
-                {
-                    name: "OG Son",
-                    id: 3,
-                    generation: 2,
-                    dob: moment("6-12-1990", "D-MM-YYYY"),
-                    deceased: false,
-                    dod: null,
-                    gender: "M",
-                    description: "",
-                    related: [
-                        { id: 1, relation: "Son" },
-                        { id: 2, relation: "Son" },
-                        { id: 4, relation: "Husband" },
-                    ],
-                },
-                {
-                    name: "OG Son Wife",
-                    id: 4,
-                    generation: 2,
-                    dob: moment("6-12-1990", "D-MM-YYYY"),
-                    deceased: false,
-                    dod: null,
-                    gender: "F",
-                    description: "",
-                    related: [{ id: 3, relation: "Wife" }],
-                },
-            ],
-            navIds: [],
             titleToRelationMap: {
                 Spouse: ["Wife", "Husband"],
                 Children: ["Son", "Daughter"],
@@ -85,6 +33,12 @@ export default {
         };
     },
     computed: {
+        people() {
+            return Object.values(this.$store.state.people);
+        },
+        navIds() {
+            return this.$store.state.selectedUsersHistory;
+        },
         activeNavId() {
             return this.navIds[this.navIds.length - 1];
         },
@@ -146,7 +100,7 @@ export default {
     },
     methods: {
         handleCardSelect({ id }) {
-            this.navIds = [...this.navIds, id];
+            this.$store.commit('addUserToHistory', id);
         },
     },
 };

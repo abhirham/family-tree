@@ -6,7 +6,7 @@
     >
         <v-img
             height="250"
-            src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+            :src="person.img"
         ></v-img>
 
         <v-card-title>{{ person.name }}</v-card-title>
