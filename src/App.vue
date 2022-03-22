@@ -1,10 +1,10 @@
 <template>
     <v-app>
-        <v-app-bar app color="white" dark elevate-on-scroll>
+        <v-app-bar clipped-left app color="red" dark elevate-on-scroll>
             <v-spacer></v-spacer>
         </v-app-bar>
-
-        <v-main>
+        <v-navigation-drawer app clipped absolute permanent expand-on-hover></v-navigation-drawer>
+        <v-main class="grey">
             <Container />
         </v-main>
     </v-app>
@@ -25,3 +25,9 @@ export default {
     }),
 };
 </script>
+
+<style>
+* {
+    font-family: 'Poppins', sans-serif;
+}
+</style>

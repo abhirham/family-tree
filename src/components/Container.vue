@@ -4,7 +4,7 @@
             <v-card-title :key="group.title + 's'">{{
                 group.title
             }}</v-card-title>
-            <v-row justify="center" :key="group.title">
+            <v-row  :key="group.title">
                 <ImageCard
                     @select="handleCardSelect(user)"
                     v-for="user in group.users"
