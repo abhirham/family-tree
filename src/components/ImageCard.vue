@@ -28,6 +28,10 @@ export default {
             required: true,
             type: Object,
         },
+        disableClick: {
+            default: false,
+            type: Boolean,
+        },
     },
     computed: {
         age() {
@@ -36,6 +40,10 @@ export default {
     },
     methods: {
         handleCardClick() {
+            if(this.disableClick){
+                return;
+            }
+
             let {id, img, name} = this.person;
             this.$store.commit('addUserToHistory', {id, img, name});
         },

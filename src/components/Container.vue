@@ -7,6 +7,7 @@
             <v-row class="mb-0" :key="group.title">
                 <ImageCard
                     v-for="user in group.users"
+                    :disableClick="disableCardClick(user)"
                     :key="user.id"
                     :person="user"
                 />
@@ -37,6 +38,12 @@ export default {
         },
         navIds() {
             return this.$store.state.selectedUsersHistory;
+        },
+        visibleUserIdsMap() {
+            let obj = {};
+
+            this.usersToShow.forEach(x => obj[x.id] = true);
+            return obj;
         },
         activeNavId() {
             return (this.navIds[this.navIds.length - 1] ?? {}).id;
@@ -97,5 +104,10 @@ export default {
             return arr.filter((x) => (x.users ?? []).length > 0);
         },
     },
+    methods: {
+        disableCardClick({related, id}) {
+            return related.some(x => !this.visibleUserIdsMap[x.id] && x.id !== id);
+        }
+    }
 };
 </script>
