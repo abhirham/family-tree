@@ -27,7 +27,7 @@ export default {
     },
     methods: {
         setActiveUser(idx){
-            this.$store.commit('setSelectedUsersHistory', this.sideNavUsers.filter((x, i) => i <= idx))
+            this.$store.commit('setSelectedUsersHistory', this.sideNavUsers.filter((x, i) => idx > 0 && i <= idx))
         }
     }
 };

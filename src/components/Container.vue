@@ -18,6 +18,7 @@
 
 <script>
 import ImageCard from "./ImageCard.vue";
+import _ from 'lodash';
 
 export default {
     name: "Container",
@@ -35,6 +36,29 @@ export default {
     computed: {
         people() {
             return Object.values(this.$store.state.people);
+        },
+        usersRelatedMap(){
+            let obj = {};
+
+            this.people.forEach(x => {
+
+                if(!obj[x.id]) {
+                    obj[x.id] = [];
+                }
+
+                x.related.forEach(y => {
+                    if(!obj[y.id]) {
+                        obj[y.id] = [];
+                    }
+                    obj[x.id].push(y.id)
+                    obj[y.id].push(x.id)
+                })
+            })
+
+            Object.keys(obj).forEach(x => {
+                obj[x] = _.uniq(obj[x]);
+            })
+            return obj;
         },
         navIds() {
             return this.$store.state.selectedUsersHistory;
@@ -105,10 +129,10 @@ export default {
         },
     },
     methods: {
-        disableCardClick({related}) {
+        disableCardClick({id}) {
             
-            return !related.some(x => {
-                return !this.visibleUserIdsMap[x.id] && x.id !== this.activeNavId
+            return !this.usersRelatedMap[id].some(x => {
+                return !this.visibleUserIdsMap[x] && x !== this.activeNavId
             });
         }
     }
