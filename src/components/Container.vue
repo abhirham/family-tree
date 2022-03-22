@@ -105,8 +105,11 @@ export default {
         },
     },
     methods: {
-        disableCardClick({related, id}) {
-            return related.some(x => !this.visibleUserIdsMap[x.id] && x.id !== id);
+        disableCardClick({related}) {
+            
+            return !related.some(x => {
+                return !this.visibleUserIdsMap[x.id] && x.id !== this.activeNavId
+            });
         }
     }
 };
