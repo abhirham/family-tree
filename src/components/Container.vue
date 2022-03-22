@@ -6,7 +6,6 @@
             }}</v-card-title>
             <v-row class="mb-0" :key="group.title">
                 <ImageCard
-                    @select="handleCardSelect(user)"
                     v-for="user in group.users"
                     :key="user.id"
                     :person="user"
@@ -40,7 +39,7 @@ export default {
             return this.$store.state.selectedUsersHistory;
         },
         activeNavId() {
-            return this.navIds[this.navIds.length - 1];
+            return (this.navIds[this.navIds.length - 1] ?? {}).id;
         },
         usersToShow() {
             return this.people.filter((x) => {
@@ -96,11 +95,6 @@ export default {
             });
 
             return arr.filter((x) => (x.users ?? []).length > 0);
-        },
-    },
-    methods: {
-        handleCardSelect({ id }) {
-            this.$store.commit('addUserToHistory', id);
         },
     },
 };

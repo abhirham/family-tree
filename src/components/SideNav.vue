@@ -1,7 +1,7 @@
 <template>
     <v-navigation-drawer app clipped permanent expand-on-hover>
         <v-list dense>
-            <v-list-item v-for="user in sideNavUsers" :key="user.id" link class="px-2">
+            <v-list-item v-for="(user, idx) in sideNavUsers" :key="user.id" @click="setActiveUser(idx)" class="px-2">
                 <v-list-item-avatar>
                     <v-img
                         :src="user.img"
@@ -22,7 +22,12 @@ export default {
     name: "SideNav",
     computed: {
         sideNavUsers(){
-            return this.$store.getters.itemsForSideNav;
+            return this.$store.state.selectedUsersHistory;
+        }
+    },
+    methods: {
+        setActiveUser(idx){
+            this.$store.commit('setSelectedUsersHistory', this.sideNavUsers.filter((x, i) => i <= idx))
         }
     }
 };

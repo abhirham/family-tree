@@ -1,7 +1,7 @@
 <template>
     <v-card
         max-width="374"
-        @click="$emit('select')"
+        @click="handleCardClick"
         class="mx-5 mb-5 ImageCard"
     >
         <v-img
@@ -34,5 +34,11 @@ export default {
             return moment().diff(this.person.dob, "years");
         },
     },
+    methods: {
+        handleCardClick() {
+            let {id, img, name} = this.person;
+            this.$store.commit('addUserToHistory', {id, img, name});
+        },
+    }
 };
 </script>
