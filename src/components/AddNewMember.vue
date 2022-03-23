@@ -87,7 +87,9 @@
                         />
                     </v-col>
                     <v-col cols="12" class="py-0">
-                        <v-card-subtitle class="py-0 font-weight-bold">Relations</v-card-subtitle>
+                        <v-card-subtitle class="py-0 font-weight-bold"
+                            >Relations</v-card-subtitle
+                        >
                     </v-col>
                     <template v-for="(r, idx) in related">
                         <v-col :key="idx" cols="6">
@@ -117,15 +119,29 @@
                                 @change="handleRelationChage(idx)"
                             />
                         </v-col>
-                        <v-col :key="idx + 'rx'" v-show="r.id !== undefined" class="px-0" cols="1">
-                            <v-btn icon @click="removeRelatedUser(idx)"><v-icon>mdi-delete-outline</v-icon></v-btn>
+                        <v-col
+                            :key="idx + 'rx'"
+                            v-show="r.id !== undefined"
+                            class="px-0"
+                            cols="1"
+                        >
+                            <v-btn icon @click="removeRelatedUser(idx)"
+                                ><v-icon>mdi-delete-outline</v-icon></v-btn
+                            >
                         </v-col>
                     </template>
                 </v-row>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="primary" :disabled="disableSaveBtn" @click="handleSaveClick">save</v-btn>
-                <v-btn color="primary" outlined @click="showModal = false">cancel</v-btn>
+                <v-btn
+                    color="primary"
+                    :disabled="disableSaveBtn"
+                    @click="handleSaveClick"
+                    >save</v-btn
+                >
+                <v-btn color="primary" outlined @click="showModal = false"
+                    >cancel</v-btn
+                >
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -167,8 +183,15 @@ export default {
                 this.$emit("input", val);
             },
         },
-        disableSaveBtn(){
-            return this.name.first === "" || this.name.last === "" || this.gender === null || this.dob === null || (this.deceased && this.dod === null) || this.isRelatedInValid
+        disableSaveBtn() {
+            return (
+                this.name.first === "" ||
+                this.name.last === "" ||
+                this.gender === null ||
+                this.dob === null ||
+                (this.deceased && this.dod === null) ||
+                this.isRelatedInValid
+            );
         },
         existingMembers() {
             return Object.values(this.$store.state.people).map(
@@ -182,24 +205,33 @@ export default {
                 this.related = [...this.related, {}];
             }
         },
-        handleSaveClick(){
-        },
-        removeRelatedUser(idx){
+        handleSaveClick() {},
+        removeRelatedUser(idx) {
             let arr = this.related.filter((_, i) => i !== idx);
-            if(arr.slice(-1).some(x => x.id !== undefined && x.relation !== undefined)) {
-                arr.push({})
+            if (
+                arr
+                    .slice(-1)
+                    .some((x) => x.id !== undefined && x.relation !== undefined)
+            ) {
+                arr.push({});
             }
             this.related = arr;
-        }
+        },
     },
     watch: {
-        related:{
+        related: {
             deep: true,
             handler(val) {
-                this.isRelatedInValid = val.filter(x => x.id !== undefined || x.relation !== undefined).some(x => x.id === undefined || x.relation === undefined)
-            }
-        }
-    }
+                this.isRelatedInValid = val
+                    .filter(
+                        (x) => x.id !== undefined || x.relation !== undefined
+                    )
+                    .some(
+                        (x) => x.id === undefined || x.relation === undefined
+                    );
+            },
+        },
+    },
 };
 </script>
 
