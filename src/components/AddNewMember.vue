@@ -195,7 +195,7 @@ export default {
         },
         existingMembers() {
             return Object.values(this.$store.state.people).map(
-                ({ id, name }) => ({ id, name })
+                ({ id, name }) => ({ id, name: `${name.first} ${name.last}` })
             );
         },
     },
@@ -209,7 +209,7 @@ export default {
             let {name, dob, gender, deceased, dod, description, img, related} = this;
             let payload = {
                 id: this.existingMembers.length,
-                name, dob, gender, deceased, dod, description, img, related
+                name, dob, gender, deceased, dod, description, img, related: related.slice(0, -1)
             }
             this.$store.commit("addNewMember", payload);
             this.showModal = false;

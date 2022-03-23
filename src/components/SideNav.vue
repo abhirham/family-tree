@@ -9,7 +9,7 @@
                 </v-list-item-avatar>
                 <v-list-item-content>
                     <v-list-item-title class="text-h6">
-                        {{user.name}}
+                        {{user.name.first}} {{user.name.last}}
                     </v-list-item-title>
                 </v-list-item-content>
             </v-list-item>

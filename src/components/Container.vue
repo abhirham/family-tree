@@ -27,9 +27,9 @@ export default {
     },
     data() {
         return {
-            titleToRelationMap: {
-                Spouse: ["Spouse"],
-                Children: ["Child"],
+            relationToTitleMap: {
+                Spouse: "Spouse",
+                Child: "Children"
             },
         };
     },
@@ -72,24 +72,24 @@ export default {
         activeNavId() {
             return (this.navIds[this.navIds.length - 1] ?? {}).id;
         },
+        usersWhoAreChildren() {
+            let obj = {};
+            this.people.forEach(x => {
+                if(x.related.some(y => y.relation === "Child")) {
+                    obj[x.id] = true;
+                }
+            })
+
+            return obj;
+        },
         usersToShow() {
             return this.people.filter((x) => {
                 if (this.activeNavId === undefined) {
-                    return !x.related.some(y => y.relation === "Child");
+                    return !this.usersWhoAreChildren[x.id] && !x.related.some(y => this.usersWhoAreChildren[y.id])
                 }
 
                 return x.related.some((y) => y.id === this.activeNavId);
             });
-        },
-        headerToRelationMap() {
-            let obj = this.titleToRelationMap;
-
-            let res = {};
-            Object.keys(obj).forEach((x) => {
-                obj[x].forEach((y) => (res[y] = x));
-            });
-
-            return res;
         },
         groupedUsersToShow() {
             if (this.activeNavId === undefined) {
@@ -114,15 +114,15 @@ export default {
                     return false;
                 });
 
-                obj[this.headerToRelationMap[relation]] =
-                    obj[this.headerToRelationMap[relation]] ?? [];
-                obj[this.headerToRelationMap[relation]].push(x);
+                obj[relation] =
+                    obj[relation] ?? [];
+                obj[relation].push(x);
             });
 
             let arr = [];
 
-            Object.keys(this.titleToRelationMap).forEach((x) => {
-                arr.push({ title: x, users: obj[x] });
+            Object.keys(this.relationToTitleMap).forEach((x) => {
+                arr.push({ title: this.relationToTitleMap[x], users: obj[x] });
             });
 
             return arr.filter((x) => (x.users ?? []).length > 0);
