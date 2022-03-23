@@ -149,6 +149,7 @@
 
 <script>
 import DatePicker from "./DatePicker.vue";
+import _ from 'lodash';
 
 export default {
     name: "AddNewMember",
@@ -164,14 +165,13 @@ export default {
             },
             dob: null,
             gender: null,
-            generation: 1,
             deceased: false,
             dod: null,
             description: "",
             img: null,
             related: [{}],
             isRelatedInValid: false,
-            relations: ["Husband", "Wife", "Son", "Daughter", "Sibling"],
+            relations: ["Spouse", "Child", "Sibling"]
         };
     },
     computed: {
@@ -205,7 +205,15 @@ export default {
                 this.related = [...this.related, {}];
             }
         },
-        handleSaveClick() {},
+        handleSaveClick() {
+            let {name, dob, gender, deceased, dod, description, img, related} = this;
+            let payload = {
+                id: this.existingMembers.length,
+                name, dob, gender, deceased, dod, description, img, related
+            }
+            this.$store.commit("addNewMember", payload);
+            this.showModal = false;
+        },
         removeRelatedUser(idx) {
             let arr = this.related.filter((_, i) => i !== idx);
             if (

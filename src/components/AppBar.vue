@@ -3,7 +3,7 @@
         <v-toolbar-title class="pageTitle">Savarap Family</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="showAddNewMember = true"><v-icon left>mdi-plus</v-icon>add new</v-btn>
-        <AddNewMember v-model="showAddNewMember" />
+        <AddNewMember v-if="showAddNewMember" v-model="showAddNewMember" />
     </v-app-bar>
 </template>
 
@@ -16,7 +16,7 @@ export default {
     },
     data() {
         return {
-            showAddNewMember: true
+            showAddNewMember: false
         }
     },
 };

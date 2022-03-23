@@ -9,11 +9,12 @@
             :src="person.img"
         ></v-img>
 
-        <v-card-title>{{ person.name }}</v-card-title>
+        <v-card-title>{{ person.name.first }} {{ person.name.last }}</v-card-title>
 
         <v-card-text>
             <div><b>Age:</b> {{ age }} Years</div>
             <div><b>Sex:</b> {{ person.gender }}</div>
+            <div v-if="person.deceased"><b>Death:</b> {{ formatDate(person.dod, 'D MMM, YYYY') }}</div>
         </v-card-text>
     </v-card>
 </template>
@@ -47,6 +48,9 @@ export default {
             let {id, img, name} = this.person;
             this.$store.commit('addUserToHistory', {id, img, name});
         },
+        formatDate(date, format) {
+            return moment(date).format(format);
+        }
     }
 };
 </script>

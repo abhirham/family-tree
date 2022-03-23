@@ -28,8 +28,8 @@ export default {
     data() {
         return {
             titleToRelationMap: {
-                Spouse: ["Wife", "Husband"],
-                Children: ["Son", "Daughter"],
+                Spouse: ["Spouse"],
+                Children: ["Child"],
             },
         };
     },
@@ -75,7 +75,7 @@ export default {
         usersToShow() {
             return this.people.filter((x) => {
                 if (this.activeNavId === undefined) {
-                    return x.generation === 1;
+                    return !x.related.some(y => y.relation === "Child");
                 }
 
                 return x.related.some((y) => y.id === this.activeNavId);
