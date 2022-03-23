@@ -1,9 +1,6 @@
 <template>
     <v-app>
-        <v-app-bar clipped-left app color="red" dark elevate-on-scroll>
-            <v-toolbar-title class="pageTitle">Savarap Family</v-toolbar-title>
-            <v-spacer></v-spacer>
-        </v-app-bar>
+        <AppBar />
         <SideNav />
         <v-main class="grey">
             <Container />
@@ -14,13 +11,15 @@
 <script>
 import Container from "./components/Container";
 import SideNav from "./components/SideNav";
+import AppBar from "./components/AppBar";
 
 export default {
     name: "App",
 
     components: {
         Container,
-        SideNav
+        SideNav,
+        AppBar,
     },
 
     data: () => ({
@@ -31,11 +30,11 @@ export default {
 
 <style>
 * {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
 }
 
 .pageTitle {
-    font-family: 'Pacifico', cursive;
+    font-family: "Pacifico", cursive;
     overflow: visible !important;
 }
 </style>
