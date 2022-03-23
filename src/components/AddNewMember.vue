@@ -105,7 +105,7 @@
                         <v-col
                             :key="idx + 'r'"
                             v-show="r.id !== undefined"
-                            cols="6"
+                            cols="5"
                         >
                             <v-autocomplete
                                 outlined
@@ -117,12 +117,15 @@
                                 @change="handleRelationChage(idx)"
                             />
                         </v-col>
+                        <v-col :key="idx + 'rx'" v-show="r.id !== undefined" class="px-0" cols="1">
+                            <v-btn icon @click="removeRelatedUser(idx)"><v-icon>mdi-delete-outline</v-icon></v-btn>
+                        </v-col>
                     </template>
                 </v-row>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="primary">save</v-btn>
-                <v-btn color="primary" outlined>cancel</v-btn>
+                <v-btn color="primary" :disabled="disableSaveBtn" @click="handleSaveClick">save</v-btn>
+                <v-btn color="primary" outlined @click="showModal = false">cancel</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -149,8 +152,9 @@ export default {
             deceased: false,
             dod: null,
             description: "",
-            img: "",
+            img: null,
             related: [{}],
+            isRelatedInValid: false,
             relations: ["Husband", "Wife", "Son", "Daughter", "Sibling"],
         };
     },
@@ -162,6 +166,9 @@ export default {
             set(val) {
                 this.$emit("input", val);
             },
+        },
+        disableSaveBtn(){
+            return this.name.first === "" || this.name.last === "" || this.gender === null || this.dob === null || (this.deceased && this.dod === null) || this.isRelatedInValid
         },
         existingMembers() {
             return Object.values(this.$store.state.people).map(
@@ -175,7 +182,24 @@ export default {
                 this.related = [...this.related, {}];
             }
         },
+        handleSaveClick(){
+        },
+        removeRelatedUser(idx){
+            let arr = this.related.filter((_, i) => i !== idx);
+            if(arr.slice(-1).some(x => x.id !== undefined && x.relation !== undefined)) {
+                arr.push({})
+            }
+            this.related = arr;
+        }
     },
+    watch: {
+        related:{
+            deep: true,
+            handler(val) {
+                this.isRelatedInValid = val.filter(x => x.id !== undefined || x.relation !== undefined).some(x => x.id === undefined || x.relation === undefined)
+            }
+        }
+    }
 };
 </script>
 
