@@ -16,16 +16,9 @@
             <v-card-text>
                 <v-row>
                     <v-col cols="12">
-                        <v-file-input
-                            accept="image/png, image/jpeg, image/bmp"
-                            prepend-inner-icon="mdi-camera"
-                            prepend-icon=""
-                            label="Photo"
-                            v-model="img"
-                            outlined
-                            dense
-                            hide-details="auto"
-                        ></v-file-input>
+                        <v-btn @click="openImageUploadComponent"
+                            >Upload image</v-btn
+                        >
                     </v-col>
                     <v-col cols="6">
                         <v-text-field
@@ -149,7 +142,7 @@
 
 <script>
 import DatePicker from "./DatePicker.vue";
-import _ from 'lodash';
+import _ from "lodash";
 
 export default {
     name: "AddNewMember",
@@ -171,7 +164,8 @@ export default {
             img: null,
             related: [{}],
             isRelatedInValid: false,
-            relations: ["Spouse", "Child", "Sibling"]
+            relations: ["Spouse", "Child", "Sibling"],
+            cloudinaryWidget: null,
         };
     },
     computed: {
@@ -206,11 +200,27 @@ export default {
             }
         },
         handleSaveClick() {
-            let {name, dob, gender, deceased, dod, description, img, related} = this;
+            let {
+                name,
+                dob,
+                gender,
+                deceased,
+                dod,
+                description,
+                img,
+                related,
+            } = this;
             let payload = {
                 id: this.existingMembers.length,
-                name, dob, gender, deceased, dod, description, img, related: related.slice(0, -1)
-            }
+                name,
+                dob,
+                gender,
+                deceased,
+                dod,
+                description,
+                img,
+                related: related.slice(0, -1),
+            };
             this.$store.commit("addNewMember", payload);
             this.showModal = false;
         },
@@ -225,6 +235,26 @@ export default {
             }
             this.related = arr;
         },
+        openImageUploadComponent() {
+            this.cloudinaryWidget.open();
+        },
+    },
+    mounted() {
+        this.cloudinaryWidget = window.cloudinary.createUploadWidget(
+            {
+                cloud_name: "ddta4fa1l",
+                upload_preset: "ml9btvbw",
+                cropping: true,
+                multiple: false,
+                croppingAspectRatio: 1,
+                clientAllowedFormats: ["png"],
+            },
+            (error, result) => {
+                if (!error && result && result.event === "success") {
+                    console.log("Done uploading..: ", result.info);
+                }
+            }
+        );
     },
     watch: {
         related: {
