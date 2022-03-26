@@ -16,9 +16,11 @@
             <v-card-text>
                 <v-row>
                     <v-col cols="12">
-                        <v-btn @click="openImageUploadComponent"
-                            >Upload image</v-btn
-                        >
+                        <v-file-input
+                            accept=".jpg , .jpeg , .jfif , .pjpeg , .pjp, .png, .svg, .webp"
+                            label="Upload Image"
+                            v-model="img"
+                        ></v-file-input>
                     </v-col>
                     <v-col cols="6">
                         <v-text-field
@@ -130,6 +132,7 @@
                     color="primary"
                     :disabled="disableSaveBtn"
                     @click="handleSaveClick"
+                    :loading="loading"
                     >save</v-btn
                 >
                 <v-btn color="primary" outlined @click="showModal = false"
@@ -165,7 +168,7 @@ export default {
             related: [{}],
             isRelatedInValid: false,
             relations: ["Spouse", "Child", "Sibling"],
-            cloudinaryWidget: null,
+            loading: false,
         };
     },
     computed: {
@@ -199,30 +202,50 @@ export default {
                 this.related = [...this.related, {}];
             }
         },
-        handleSaveClick() {
-            let {
-                name,
-                dob,
-                gender,
-                deceased,
-                dod,
-                description,
-                img,
-                related,
-            } = this;
-            let payload = {
-                id: this.existingMembers.length,
-                name,
-                dob,
-                gender,
-                deceased,
-                dod,
-                description,
-                img,
-                related: related.slice(0, -1),
-            };
-            this.$store.commit("addNewMember", payload);
-            this.showModal = false;
+        convertFileToBase64(file) {
+            return new Promise((res, rej) => {
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                    res(reader.result);
+                };
+                reader.onerror = function (error) {
+                    rej(error);
+                };
+            })
+        },
+        async handleSaveClick() {
+            this.loading = true;
+            try {
+                let imageData = await this.convertFileToBase64(this.img);
+    
+                let res = await this.$store.dispatch('uploadImage', {imageData});
+                
+                let {
+                    name,
+                    dob,
+                    gender,
+                    deceased,
+                    dod,
+                    description,
+                    related,
+                } = this;
+                let payload = {
+                    id: this.existingMembers.length,
+                    name,
+                    dob,
+                    gender,
+                    deceased,
+                    dod,
+                    description,
+                    img: res.url,
+                    related: related.slice(0, -1),
+                };
+                this.$store.commit("addNewMember", payload);
+                this.showModal = false;
+            }finally {
+                this.loading = false;
+            }
         },
         removeRelatedUser(idx) {
             let arr = this.related.filter((_, i) => i !== idx);
@@ -234,27 +257,7 @@ export default {
                 arr.push({});
             }
             this.related = arr;
-        },
-        openImageUploadComponent() {
-            this.cloudinaryWidget.open();
-        },
-    },
-    mounted() {
-        this.cloudinaryWidget = window.cloudinary.createUploadWidget(
-            {
-                cloud_name: "ddta4fa1l",
-                upload_preset: "ml9btvbw",
-                cropping: true,
-                multiple: false,
-                croppingAspectRatio: 1,
-                clientAllowedFormats: ["png"],
-            },
-            (error, result) => {
-                if (!error && result && result.event === "success") {
-                    console.log("Done uploading..: ", result.info);
-                }
-            }
-        );
+        }
     },
     watch: {
         related: {

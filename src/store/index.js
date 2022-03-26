@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from 'axios';
 
 Vue.use(Vuex);
 
@@ -31,6 +32,13 @@ export default new Vuex.Store({
             state.people = {...state.people, [payload.id]: payload}
         }
     },
-    actions: {},
+    actions: {
+        uploadImage(ctx, {imageData}) {
+            return axios.post('https://api.cloudinary.com/v1_1/ddta4fa1l/image/upload', {
+                file: imageData,
+                upload_preset: "ml9btvbw"
+            }).then(res => res.data);
+        }
+    },
     modules: {},
 });
