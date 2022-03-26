@@ -18,7 +18,7 @@
 
 <script>
 import ImageCard from "./ImageCard.vue";
-import _ from 'lodash';
+import _ from "lodash";
 
 export default {
     name: "Container",
@@ -29,7 +29,7 @@ export default {
         return {
             relationToTitleMap: {
                 Spouse: "Spouse",
-                Child: "Children"
+                Child: "Children",
             },
         };
     },
@@ -37,27 +37,26 @@ export default {
         people() {
             return Object.values(this.$store.state.people);
         },
-        usersRelatedMap(){
+        usersRelatedMap() {
             let obj = {};
 
-            this.people.forEach(x => {
-
-                if(!obj[x.id]) {
+            this.people.forEach((x) => {
+                if (!obj[x.id]) {
                     obj[x.id] = [];
                 }
 
-                x.related.forEach(y => {
-                    if(!obj[y.id]) {
+                x.related.forEach((y) => {
+                    if (!obj[y.id]) {
                         obj[y.id] = [];
                     }
-                    obj[x.id].push(y.id)
-                    obj[y.id].push(x.id)
-                })
-            })
+                    obj[x.id].push(y.id);
+                    obj[y.id].push(x.id);
+                });
+            });
 
-            Object.keys(obj).forEach(x => {
+            Object.keys(obj).forEach((x) => {
                 obj[x] = _.uniq(obj[x]);
-            })
+            });
             return obj;
         },
         navIds() {
@@ -66,7 +65,7 @@ export default {
         visibleUserIdsMap() {
             let obj = {};
 
-            this.usersToShow.forEach(x => obj[x.id] = true);
+            this.usersToShow.forEach((x) => (obj[x.id] = true));
             return obj;
         },
         activeNavId() {
@@ -74,18 +73,21 @@ export default {
         },
         usersWhoAreChildren() {
             let obj = {};
-            this.people.forEach(x => {
-                if(x.related.some(y => y.relation === "Child")) {
+            this.people.forEach((x) => {
+                if (x.related.some((y) => y.relation === "Child")) {
                     obj[x.id] = true;
                 }
-            })
+            });
 
             return obj;
         },
         usersToShow() {
             return this.people.filter((x) => {
                 if (this.activeNavId === undefined) {
-                    return !this.usersWhoAreChildren[x.id] && !x.related.some(y => this.usersWhoAreChildren[y.id])
+                    return (
+                        !this.usersWhoAreChildren[x.id] &&
+                        !x.related.some((y) => this.usersWhoAreChildren[y.id])
+                    );
                 }
 
                 return x.related.some((y) => y.id === this.activeNavId);
@@ -114,8 +116,7 @@ export default {
                     return false;
                 });
 
-                obj[relation] =
-                    obj[relation] ?? [];
+                obj[relation] = obj[relation] ?? [];
                 obj[relation].push(x);
             });
 
@@ -129,15 +130,14 @@ export default {
         },
     },
     methods: {
-        disableCardClick({id}) {
-            
-            return !this.usersRelatedMap[id].some(x => {
-                return !this.visibleUserIdsMap[x] && x !== this.activeNavId
+        disableCardClick({ id }) {
+            return !this.usersRelatedMap[id].some((x) => {
+                return !this.visibleUserIdsMap[x] && x !== this.activeNavId;
             });
-        }
+        },
     },
     mounted() {
         this.$store.dispatch("fetchMembers");
-    }
+    },
 };
 </script>
