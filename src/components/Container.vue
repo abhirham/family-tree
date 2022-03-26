@@ -135,6 +135,9 @@ export default {
                 return !this.visibleUserIdsMap[x] && x !== this.activeNavId
             });
         }
+    },
+    mounted() {
+        this.$store.dispatch("fetchMembers");
     }
 };
 </script>

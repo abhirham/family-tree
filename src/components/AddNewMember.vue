@@ -216,11 +216,15 @@ export default {
         },
         async handleSaveClick() {
             this.loading = true;
+            let img = null;
             try {
-                let imageData = await this.convertFileToBase64(this.img);
-    
-                let res = await this.$store.dispatch('uploadImage', {imageData});
-                
+                if(this.img){
+                    let imageData = await this.convertFileToBase64(this.img);
+        
+                    let imageRes = await this.$store.dispatch('uploadImage', {imageData});
+                    img = imageRes.url;
+                }
+
                 let {
                     name,
                     dob,
@@ -231,17 +235,29 @@ export default {
                     related,
                 } = this;
                 let payload = {
-                    id: this.existingMembers.length,
                     name,
                     dob,
                     gender,
                     deceased,
                     dod,
                     description,
-                    img: res.url,
+                    img,
                     related: related.slice(0, -1),
                 };
-                this.$store.commit("addNewMember", payload);
+
+                let res = await this.$store.dispatch('saveUserToDB', payload);
+                let promiseArr = [];
+
+                related.forEach(x => {
+                    if(x.relation === "Spouse") {
+                        let {related} = this.$store.state.people[x.id];
+                        related.push({id: res.id, relation: "Spouse"})
+                        promiseArr.push(this.$store.dispatch("updateDoc", {userId: x.id, dataToUpdate: {related}}))
+                    }
+                })
+
+                await Promise.all(promiseArr);
+
                 this.showModal = false;
             }finally {
                 this.loading = false;
