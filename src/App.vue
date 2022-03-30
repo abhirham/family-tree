@@ -1,17 +1,17 @@
 <template>
     <v-app>
-        <AppBar />
         <SideNav />
-        <v-main class="grey">
+        <v-main class="gray">
             <Container />
         </v-main>
+        <AddNewMemberContainer />
     </v-app>
 </template>
 
 <script>
 import Container from "./components/Container";
 import SideNav from "./components/SideNav";
-import AppBar from "./components/AppBar";
+import AddNewMemberContainer from "./components/AddNewMemberContainer";
 
 export default {
     name: "App",
@@ -19,7 +19,7 @@ export default {
     components: {
         Container,
         SideNav,
-        AppBar,
+        AddNewMemberContainer,
     },
 
     data: () => ({
