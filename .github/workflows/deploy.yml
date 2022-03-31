@@ -19,4 +19,4 @@ jobs:
         with:
           args: deploy --only hosting:savarapfamilytree
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FAMILY_TREE_6AF23 }}
+          FIREBASE_TOKEN: ${{ secrets.HOSTING_TOKEN }}
