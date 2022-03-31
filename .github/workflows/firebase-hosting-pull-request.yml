@@ -13,5 +13,5 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FAMILY_TREE_6AF23 }}'
+          firebaseServiceAccount: '${{ secrets.HOSTING_TOKEN }}'
           projectId: family-tree-6af23
