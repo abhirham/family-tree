@@ -8,7 +8,7 @@
     >
         <v-card>
             <v-card-title>
-                Add Family Member
+                {{editMode ? "Edit" : "Add"}} Family Member
                 <v-btn icon right absolute @click="showModal = false"
                     ><v-icon>mdi-close</v-icon></v-btn
                 >
@@ -85,7 +85,7 @@
                             dense
                         />
                     </v-col>
-                    <v-col cols="6" v-if="deceased">
+                    <v-col cols="6" v-show="deceased">
                         <DatePicker
                             v-model="dod"
                             label="Date of death"
@@ -158,6 +158,13 @@
                     :loading="loading"
                     >save</v-btn
                 >
+                <v-btn
+                    color="primary"
+                    :disabled="disableSaveBtn"
+                    @click="handleUpdateClick"
+                    :loading="loading"
+                    >update</v-btn
+                >
                 <v-btn color="primary" outlined @click="showModal = false"
                     >cancel</v-btn
                 >
@@ -174,6 +181,7 @@ export default {
     name: "AddNewMember",
     props: {
         value: { required: true, type: Boolean },
+        editMode: { default: false, type: Boolean },
     },
     components: { DatePicker },
     data() {
@@ -277,6 +285,66 @@ export default {
                 };
 
                 let res = await this.$store.dispatch("saveUserToDB", payload);
+                let promiseArr = [];
+
+                related.forEach((x) => {
+                    if (x.relation === "Spouse") {
+                        let { related } = this.$store.state.people[x.id];
+                        related.push({ id: res.id, relation: "Spouse" });
+                        promiseArr.push(
+                            this.$store.dispatch("updateDoc", {
+                                userId: x.id,
+                                dataToUpdate: { related },
+                            })
+                        );
+                    }
+                });
+
+                await Promise.all(promiseArr);
+
+                this.showModal = false;
+            } finally {
+                this.loading = false;
+            }
+        },
+        async handleUpdateClick() {
+            this.loading = true;
+            let img = null;
+            try {
+                if (this.img) {
+                    let imageData = await this.convertFileToBase64(this.img);
+
+                    let imageRes = await this.$store.dispatch("uploadImage", {
+                        imageData,
+                    });
+                    img = imageRes.url;
+                }
+
+                let {
+                    name,
+                    dob,
+                    gender,
+                    deceased,
+                    dod,
+                    description,
+                    related,
+                    phone,
+                    email,
+                } = this;
+                let payload = {
+                    name,
+                    dob,
+                    gender,
+                    deceased,
+                    dod,
+                    description,
+                    img,
+                    phone,
+                    email,
+                    related: related.slice(0, -1),
+                };
+
+                let res = await this.$store.dispatch("updateUserInDB", payload);
                 let promiseArr = [];
 
                 related.forEach((x) => {

@@ -13,17 +13,21 @@
                 />
             </v-row>
         </template>
+        <AddNewMember v-model="showEditMember" editMode />
     </div>
 </template>
 
 <script>
 import ImageCard from "./ImageCard.vue";
+import AddNewMember from '@/components/AddNewMember.vue';
+
 import _ from "lodash";
 
 export default {
     name: "Container",
     components: {
         ImageCard,
+        AddNewMember
     },
     data() {
         return {
@@ -31,6 +35,7 @@ export default {
                 Spouse: "Spouse",
                 Child: "Children",
             },
+            showEditMember: true
         };
     },
     computed: {

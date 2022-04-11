@@ -42,10 +42,18 @@ export default new Vuex.Store({
                 upload_preset: "ml9btvbw"
             }).then(res => res.data);
         },
-        saveUserToDB({commit}, {name, dob, gender, deceased, dod, description, img, related}) {
+        saveUserToDB({commit}, {...userData}) {
             let docref = db.collection('savarap').doc();
-            let payload = {name, dob, gender, deceased, dod, description, img, related, id: docref.id, createdOn: new Date()};
+            let payload = {...userData, id: docref.id, createdOn: new Date()};
             return docref.set(payload).then(res => {
+                commit("addNewMember", payload);
+
+                return payload;
+            });
+        },
+        updateUserInDB({commit}, {id, ...userData}) {
+            let payload = {...userData, id, lastEditedAt: new Date()};
+            return db.collection('savarap').doc(id).update(payload).then(res => {
                 commit("addNewMember", payload);
 
                 return payload;
