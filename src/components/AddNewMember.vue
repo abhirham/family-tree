@@ -58,6 +58,26 @@
                         />
                     </v-col>
                     <v-col cols="6">
+                        <v-text-field
+                            hide-details="auto"
+                            v-model="email"
+                            outlined
+                            dense
+                            type="email"
+                            label="Email"
+                        />
+                    </v-col>
+                    <v-col cols="6">
+                        <v-text-field
+                            hide-details="auto"
+                            v-model="phone"
+                            outlined
+                            dense
+                            type="number"
+                            label="Phone"
+                        />
+                    </v-col>
+                    <v-col cols="6">
                         <v-checkbox
                             label="Is this person dead?"
                             v-model="deceased"
@@ -70,6 +90,7 @@
                             v-model="dod"
                             label="Date of death"
                             disableFuture
+                            :minDate="dob"
                         />
                     </v-col>
                     <v-col cols="12">
@@ -81,49 +102,51 @@
                             label="A few words about this person"
                         />
                     </v-col>
-                    <v-col cols="12" class="py-0">
-                        <v-card-subtitle class="py-0 font-weight-bold"
-                            >Relations</v-card-subtitle
-                        >
-                    </v-col>
-                    <template v-for="(r, idx) in related">
-                        <v-col :key="idx" cols="6">
-                            <v-autocomplete
-                                outlined
-                                dense
-                                v-model="r.id"
-                                label="Related to"
-                                hide-details="auto"
-                                :items="existingMembers"
-                                item-text="name"
-                                item-value="id"
-                            />
-                        </v-col>
-                        <v-col
-                            :key="idx + 'r'"
-                            v-show="r.id !== undefined"
-                            cols="5"
-                        >
-                            <v-autocomplete
-                                outlined
-                                dense
-                                v-model="r.relation"
-                                label="Relation"
-                                hide-details="auto"
-                                :items="relations"
-                                @change="handleRelationChage(idx)"
-                            />
-                        </v-col>
-                        <v-col
-                            :key="idx + 'rx'"
-                            v-show="r.id !== undefined"
-                            class="px-0"
-                            cols="1"
-                        >
-                            <v-btn icon @click="removeRelatedUser(idx)"
-                                ><v-icon>mdi-delete-outline</v-icon></v-btn
+                    <template v-if="existingMembers.length > 0">
+                        <v-col cols="12" class="py-0">
+                            <v-card-subtitle class="py-0 font-weight-bold"
+                                >Relations</v-card-subtitle
                             >
                         </v-col>
+                        <template v-for="(r, idx) in related">
+                            <v-col :key="idx" cols="6">
+                                <v-autocomplete
+                                    outlined
+                                    dense
+                                    v-model="r.id"
+                                    label="Related to"
+                                    hide-details="auto"
+                                    :items="existingMembers"
+                                    item-text="name"
+                                    item-value="id"
+                                />
+                            </v-col>
+                            <v-col
+                                :key="idx + 'r'"
+                                v-show="r.id !== undefined"
+                                cols="5"
+                            >
+                                <v-autocomplete
+                                    outlined
+                                    dense
+                                    v-model="r.relation"
+                                    label="Relation"
+                                    hide-details="auto"
+                                    :items="relations"
+                                    @change="handleRelationChage(idx)"
+                                />
+                            </v-col>
+                            <v-col
+                                :key="idx + 'rx'"
+                                v-show="r.id !== undefined"
+                                class="px-0"
+                                cols="1"
+                            >
+                                <v-btn icon @click="removeRelatedUser(idx)"
+                                    ><v-icon>mdi-delete-outline</v-icon></v-btn
+                                >
+                            </v-col>
+                        </template>
                     </template>
                 </v-row>
             </v-card-text>
@@ -164,6 +187,8 @@ export default {
             deceased: false,
             dod: null,
             description: "",
+            email: "",
+            phone: "",
             img: null,
             related: [{}],
             isRelatedInValid: false,
@@ -212,16 +237,18 @@ export default {
                 reader.onerror = function (error) {
                     rej(error);
                 };
-            })
+            });
         },
         async handleSaveClick() {
             this.loading = true;
             let img = null;
             try {
-                if(this.img){
+                if (this.img) {
                     let imageData = await this.convertFileToBase64(this.img);
-        
-                    let imageRes = await this.$store.dispatch('uploadImage', {imageData});
+
+                    let imageRes = await this.$store.dispatch("uploadImage", {
+                        imageData,
+                    });
                     img = imageRes.url;
                 }
 
@@ -233,6 +260,8 @@ export default {
                     dod,
                     description,
                     related,
+                    phone,
+                    email,
                 } = this;
                 let payload = {
                     name,
@@ -242,24 +271,31 @@ export default {
                     dod,
                     description,
                     img,
+                    phone,
+                    email,
                     related: related.slice(0, -1),
                 };
 
-                let res = await this.$store.dispatch('saveUserToDB', payload);
+                let res = await this.$store.dispatch("saveUserToDB", payload);
                 let promiseArr = [];
 
-                related.forEach(x => {
-                    if(x.relation === "Spouse") {
-                        let {related} = this.$store.state.people[x.id];
-                        related.push({id: res.id, relation: "Spouse"})
-                        promiseArr.push(this.$store.dispatch("updateDoc", {userId: x.id, dataToUpdate: {related}}))
+                related.forEach((x) => {
+                    if (x.relation === "Spouse") {
+                        let { related } = this.$store.state.people[x.id];
+                        related.push({ id: res.id, relation: "Spouse" });
+                        promiseArr.push(
+                            this.$store.dispatch("updateDoc", {
+                                userId: x.id,
+                                dataToUpdate: { related },
+                            })
+                        );
                     }
-                })
+                });
 
                 await Promise.all(promiseArr);
 
                 this.showModal = false;
-            }finally {
+            } finally {
                 this.loading = false;
             }
         },
@@ -273,7 +309,7 @@ export default {
                 arr.push({});
             }
             this.related = arr;
-        }
+        },
     },
     watch: {
         related: {

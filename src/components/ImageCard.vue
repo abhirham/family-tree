@@ -36,7 +36,9 @@ export default {
     },
     computed: {
         age() {
-            return moment().diff(this.person.dob, "years");
+            let {deceased, dod, dob} = this.person;
+            let end = deceased ? moment(dod) : moment();
+            return end.diff(dob, "years");
         },
     },
     methods: {
