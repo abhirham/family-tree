@@ -10,10 +10,11 @@
                     :disableClick="disableCardClick(user)"
                     :key="user.id"
                     :person="user"
+                    @edit="handleEditClick(user)"
                 />
             </v-row>
         </template>
-        <AddNewMember v-model="showEditMember" editMode />
+        <AddNewMember v-if="showEditMember" v-model="showEditMember" :userBeingEdited="usersToShow[0]" editMode />
     </div>
 </template>
 
@@ -35,7 +36,8 @@ export default {
                 Spouse: "Spouse",
                 Child: "Children",
             },
-            showEditMember: true
+            showEditMember: false,
+            userBeingEdited: null
         };
     },
     computed: {
@@ -140,6 +142,10 @@ export default {
                 return !this.visibleUserIdsMap[x] && x !== this.activeNavId;
             });
         },
+        handleEditClick(user) {
+            this.userBeingEdited = user;
+            this.showEditMember = true;
+        }
     },
     mounted() {
         this.$store.dispatch("fetchMembers");

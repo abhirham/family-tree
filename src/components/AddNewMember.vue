@@ -16,10 +16,12 @@
             <v-card-text>
                 <v-row>
                     <v-col cols="12">
+                        <v-btn v-if="imgUrl && img === null" @click="$refs.imgInput.click()">Change Image</v-btn>
                         <v-file-input
                             accept=".jpg , .jpeg , .jfif , .pjpeg , .pjp, .png, .svg, .webp"
                             label="Upload Image"
                             v-model="img"
+                            ref="imgInput"
                         ></v-file-input>
                     </v-col>
                     <v-col cols="6">
@@ -154,16 +156,18 @@
                 <v-btn
                     color="primary"
                     :disabled="disableSaveBtn"
+                    @click="handleUpdateClick"
+                    :loading="loading"
+                    v-if="editMode"
+                    >update</v-btn
+                >
+                <v-btn
+                    v-else
+                    color="primary"
+                    :disabled="disableSaveBtn"
                     @click="handleSaveClick"
                     :loading="loading"
                     >save</v-btn
-                >
-                <v-btn
-                    color="primary"
-                    :disabled="disableSaveBtn"
-                    @click="handleUpdateClick"
-                    :loading="loading"
-                    >update</v-btn
                 >
                 <v-btn color="primary" outlined @click="showModal = false"
                     >cancel</v-btn
@@ -182,6 +186,7 @@ export default {
     props: {
         value: { required: true, type: Boolean },
         editMode: { default: false, type: Boolean },
+        userBeingEdited: { default: null, type: Object },
     },
     components: { DatePicker },
     data() {
@@ -198,6 +203,7 @@ export default {
             email: "",
             phone: "",
             img: null,
+            imgUrl: null,
             related: [{}],
             isRelatedInValid: false,
             relations: ["Spouse", "Child", "Sibling"],
@@ -393,6 +399,21 @@ export default {
             },
         },
     },
+    mounted() {
+        if(this.userBeingEdited === null) return;
+        
+        let {name, dob, gender, deceased, dod, description, email, phone, img, related} = this.userBeingEdited;
+        this.name = name;
+        this.dob = dob;
+        this.gender = gender;
+        this.deceased = deceased;
+        this.dod = dod;
+        this.description = description;
+        this.email = email;
+        this.phone = phone;
+        this.imgUrl = img;
+        this.related = related;
+    }
 };
 </script>
 

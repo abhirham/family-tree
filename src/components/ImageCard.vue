@@ -5,7 +5,7 @@
             @click="handleCardClick"
             class="mx-5 mb-5 ImageCard"
         >
-            <v-btn v-show="hover" absolute top right class="z-1" color="white" icon><v-icon>mdi-pencil</v-icon></v-btn>
+            <v-btn v-show="hover" absolute top right class="z-1" color="white" @click="$emit('edit')" icon><v-icon>mdi-pencil</v-icon></v-btn>
             <v-fade-transition>
                 <v-overlay v-if="hover" absolute > </v-overlay>
             </v-fade-transition>
@@ -20,6 +20,10 @@
                 <div><b>Sex:</b> {{ person.gender }}</div>
                 <div v-if="person.deceased">
                     <b>Death:</b> {{ formatDate(person.dod, "D MMM, YYYY") }}
+                </div>
+                <div v-if="person.phone" class="d-flex flex-row">
+                    <v-icon>mdi-phone</v-icon>
+                    {{person.phone}}
                 </div>
             </v-card-text>
         </v-card>
