@@ -5,6 +5,7 @@
             <Container />
         </v-main>
         <AddNewMemberContainer />
+        <MessageDialogue />
     </v-app>
 </template>
 
@@ -12,6 +13,7 @@
 import Container from "./components/Container";
 import SideNav from "./components/SideNav";
 import AddNewMemberContainer from "./components/AddNewMemberContainer";
+import MessageDialogue from "./components/MessageDialogue";
 
 export default {
     name: "App",
@@ -20,6 +22,7 @@ export default {
         Container,
         SideNav,
         AddNewMemberContainer,
+        MessageDialogue,
     },
 
     data: () => ({

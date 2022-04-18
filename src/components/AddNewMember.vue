@@ -8,19 +8,31 @@
     >
         <v-card>
             <v-card-title>
-                {{editMode ? "Edit" : "Add"}} Family Member
-                <v-btn icon right absolute @click="showModal = false"
+                {{ editMode ? "Edit" : "Add" }} Family Member
+                <v-btn
+                    :disabled="loading"
+                    icon
+                    right
+                    absolute
+                    @click="showModal = false"
                     ><v-icon>mdi-close</v-icon></v-btn
                 >
             </v-card-title>
             <v-card-text>
                 <v-row>
                     <v-col cols="12">
-                        <v-btn v-if="imgUrl && img === null" @click="$refs.imgInput.click()">Change Image</v-btn>
+                        <v-btn
+                            :disabled="loading"
+                            v-if="imgUrl && img === null"
+                            @click="$refs.imgInput.$refs.input.click()"
+                            >Change Image</v-btn
+                        >
                         <v-file-input
+                            v-show="(imgUrl && img !== null) || imgUrl === null"
                             accept=".jpg , .jpeg , .jfif , .pjpeg , .pjp, .png, .svg, .webp"
                             label="Upload Image"
                             v-model="img"
+                            :disabled="loading"
                             ref="imgInput"
                         ></v-file-input>
                     </v-col>
@@ -30,6 +42,7 @@
                             v-model="name.first"
                             outlined
                             dense
+                            :disabled="loading"
                             label="First Name"
                         />
                     </v-col>
@@ -39,6 +52,7 @@
                             v-model="name.last"
                             outlined
                             dense
+                            :disabled="loading"
                             label="Last Name"
                         />
                     </v-col>
@@ -46,6 +60,7 @@
                         <DatePicker
                             v-model="dob"
                             label="Date of birth"
+                            :disabled="loading"
                             disableFuture
                         />
                     </v-col>
@@ -56,6 +71,7 @@
                             outlined
                             dense
                             label="Gender"
+                            :disabled="loading"
                             :items="['Male', 'Female']"
                         />
                     </v-col>
@@ -66,6 +82,7 @@
                             outlined
                             dense
                             type="email"
+                            :disabled="loading"
                             label="Email"
                         />
                     </v-col>
@@ -76,6 +93,7 @@
                             outlined
                             dense
                             type="number"
+                            :disabled="loading"
                             label="Phone"
                         />
                     </v-col>
@@ -84,6 +102,7 @@
                             label="Is this person dead?"
                             v-model="deceased"
                             hide-details="auto"
+                            :disabled="loading"
                             dense
                         />
                     </v-col>
@@ -92,6 +111,7 @@
                             v-model="dod"
                             label="Date of death"
                             disableFuture
+                            :disabled="loading"
                             :minDate="dob"
                         />
                     </v-col>
@@ -101,6 +121,7 @@
                             v-model="description"
                             hide-details="auto"
                             dense
+                            :disabled="loading"
                             label="A few words about this person"
                         />
                     </v-col>
@@ -120,6 +141,7 @@
                                     hide-details="auto"
                                     :items="existingMembers"
                                     item-text="name"
+                                    :disabled="loading"
                                     item-value="id"
                                 />
                             </v-col>
@@ -135,6 +157,7 @@
                                     label="Relation"
                                     hide-details="auto"
                                     :items="relations"
+                                    :disabled="loading"
                                     @change="handleRelationChage(idx)"
                                 />
                             </v-col>
@@ -144,7 +167,10 @@
                                 class="px-0"
                                 cols="1"
                             >
-                                <v-btn icon @click="removeRelatedUser(idx)"
+                                <v-btn
+                                    :disabled="loading"
+                                    icon
+                                    @click="removeRelatedUser(idx)"
                                     ><v-icon>mdi-delete-outline</v-icon></v-btn
                                 >
                             </v-col>
@@ -169,7 +195,11 @@
                     :loading="loading"
                     >save</v-btn
                 >
-                <v-btn color="primary" outlined @click="showModal = false"
+                <v-btn
+                    :disabled="loading"
+                    color="primary"
+                    outlined
+                    @click="showModal = false"
                     >cancel</v-btn
                 >
             </v-card-actions>
@@ -256,6 +286,7 @@ export default {
         async handleSaveClick() {
             this.loading = true;
             let img = null;
+            let imgPublicId = null;
             try {
                 if (this.img) {
                     let imageData = await this.convertFileToBase64(this.img);
@@ -264,6 +295,7 @@ export default {
                         imageData,
                     });
                     img = imageRes.url;
+                    imgPublicId = imageRes.public_id;
                 }
 
                 let {
@@ -285,6 +317,7 @@ export default {
                     dod,
                     description,
                     img,
+                    imgPublicId,
                     phone,
                     email,
                     related: related.slice(0, -1),
@@ -315,7 +348,9 @@ export default {
         },
         async handleUpdateClick() {
             this.loading = true;
-            let img = null;
+            let img = this.imgUrl;
+            let imgPublicId = this.userBeingEdited.imgPublicId ?? null;
+
             try {
                 if (this.img) {
                     let imageData = await this.convertFileToBase64(this.img);
@@ -324,6 +359,7 @@ export default {
                         imageData,
                     });
                     img = imageRes.url;
+                    imgPublicId = imageRes.public_id;
                 }
 
                 let {
@@ -345,16 +381,45 @@ export default {
                     dod,
                     description,
                     img,
+                    imgPublicId,
                     phone,
                     email,
+                    id: this.userBeingEdited.id,
                     related: related.slice(0, -1),
                 };
 
-                let res = await this.$store.dispatch("updateUserInDB", payload);
+                let arr = [this.$store.dispatch("updateUserInDB", payload)];
+
+                if (this.img) {
+                    arr.push(
+                        this.$store
+                            .dispatch("deleteImage", {
+                                imgPublicId: this.userBeingEdited.imgPublicId,
+                            })
+                            .catch((e) => {
+                                console.error(e);
+                                this.$store.commit(
+                                    "messageDialogueModule/showDialog",
+                                    {
+                                        message: `Unable to remove existing photo.`,
+                                        status: "fail",
+                                    }
+                                );
+                            })
+                    );
+                }
+                let res = await Promise.all(arr);
+
                 let promiseArr = [];
 
+                let obj = {};
+
+                this.userBeingEdited.related.forEach((x) => {
+                    obj[x.id] = x.relation;
+                });
+
                 related.forEach((x) => {
-                    if (x.relation === "Spouse") {
+                    if (obj[x.id] !== x.relation && x.relation === "Spouse") {
                         let { related } = this.$store.state.people[x.id];
                         related.push({ id: res.id, relation: "Spouse" });
                         promiseArr.push(
@@ -368,7 +433,16 @@ export default {
 
                 await Promise.all(promiseArr);
 
+                this.$store.commit("messageDialogueModule/showDialog", {
+                    message: `User has been updated.`,
+                });
                 this.showModal = false;
+            } catch (e) {
+                console.error(e);
+                this.$store.commit("messageDialogueModule/showDialog", {
+                    message: `Unable to updated user.`,
+                    status: "fail",
+                });
             } finally {
                 this.loading = false;
             }
@@ -400,9 +474,20 @@ export default {
         },
     },
     mounted() {
-        if(this.userBeingEdited === null) return;
-        
-        let {name, dob, gender, deceased, dod, description, email, phone, img, related} = this.userBeingEdited;
+        if (this.userBeingEdited === null) return;
+
+        let {
+            name,
+            dob,
+            gender,
+            deceased,
+            dod,
+            description,
+            email = "",
+            phone = "",
+            img,
+            related,
+        } = this.userBeingEdited;
         this.name = name;
         this.dob = dob;
         this.gender = gender;
@@ -412,8 +497,8 @@ export default {
         this.email = email;
         this.phone = phone;
         this.imgUrl = img;
-        this.related = related;
-    }
+        this.related = [...related, {}];
+    },
 };
 </script>
 
