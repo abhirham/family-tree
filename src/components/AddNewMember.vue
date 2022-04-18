@@ -390,6 +390,8 @@ export default {
 
                 let arr = [this.$store.dispatch("updateUserInDB", payload)];
 
+                let showSuccessMessage = true;
+
                 if (this.img) {
                     arr.push(
                         this.$store
@@ -398,6 +400,7 @@ export default {
                             })
                             .catch((e) => {
                                 console.error(e);
+                                showSuccessMessage = false;
                                 this.$store.commit(
                                     "messageDialogueModule/showDialog",
                                     {
@@ -433,7 +436,7 @@ export default {
 
                 await Promise.all(promiseArr);
 
-                this.$store.commit("messageDialogueModule/showDialog", {
+                showSuccessMessage && this.$store.commit("messageDialogueModule/showDialog", {
                     message: `User has been updated.`,
                 });
                 this.showModal = false;
