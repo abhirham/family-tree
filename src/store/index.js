@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 import { db } from "@/firestore.js";
+import {Cloudinary} from "cloudinary-vue";
 
 import messageDialogueModule from "./messageDialogueModule";
 
@@ -44,6 +45,7 @@ export default new Vuex.Store({
     },
     actions: {
         uploadImage(ctx, { imageData }) {
+            console.log('ii-i', Cloudinary)
             return axios
                 .post(cloudinaryURL + "/upload", {
                     file: imageData,
@@ -55,6 +57,7 @@ export default new Vuex.Store({
             return axios
                 .post(cloudinaryURL + "/destroy", {
                     public_id: imgPublicId,
+                    api_key: "891933346638345"
                 })
                 .then((res) => res.data);
         },
