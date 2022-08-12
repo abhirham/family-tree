@@ -4,7 +4,7 @@
             <v-card-title :key="group.title + 's'">{{
                 group.title
             }}</v-card-title>
-            <v-row class="mb-0" :key="group.title">
+            <v-row class="mb-0 ml-4" :key="group.title">
                 <ImageCard
                     v-for="user in group.users"
                     :disableClick="disableCardClick(user)"
