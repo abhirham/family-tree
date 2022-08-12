@@ -202,6 +202,10 @@
                     @click="showModal = false"
                     >cancel</v-btn
                 >
+                <template v-if="editMode">
+                    <v-spacer></v-spacer>
+                    <v-btn @click="handleDeleteClick" :loading="loading" color="error">delete</v-btn>
+                </template>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -461,6 +465,16 @@ export default {
             }
             this.related = arr;
         },
+        handleDeleteClick() {
+            this.loading = true;
+            this.$store.dispatch("deleteUser", {userId: this.userBeingEdited.id}).then(res => {
+                this.$store.commit("messageDialogueModule/showDialog", { message: `User has been deleted.`});
+                this.showModal = false;
+            }).catch(e => {
+                console.error(e);
+                this.$store.commit("messageDialogueModule/showDialog", { message: `Unable to remove user. Please try again.`, status: "fail" });
+            }).finally(() => this.loading = false);
+        }
     },
     watch: {
         related: {

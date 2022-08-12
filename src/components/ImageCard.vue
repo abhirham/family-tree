@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column mx-4">
-        <v-card max-width="400px" @click="handleCardClick" class="ImageCard" rounded="lg">
+        <v-card max-width="400px" class="ImageCard" rounded="lg">
             <v-list-item>
                 <v-list-item-avatar size="70">
                     <v-img :src="person.img" alt="person"></v-img>

@@ -70,7 +70,15 @@ export default new Vuex.Store({
                 return payload;
             });
         },
-        updateUserInDB({ commit, dispatch }, { id, ...userData }) {
+        deleteUser({state, commit}, {userId}) {
+            return db.collection("savarap").doc(userId).delete().then(res => {
+                let obj = {...state.people};
+                delete(obj[userId]);
+
+                commit("setPeople", obj);
+            })
+        },
+        updateUserInDB({ dispatch }, { id, ...userData }) {
             let dataToUpdate = { ...userData, lastEditedAt: new Date() };
             return dispatch("updateDoc", { userId: id, dataToUpdate });
         },
